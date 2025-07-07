@@ -1,0 +1,11 @@
+# Ocean Township Address Cache Requirements
+# Web scraping dependencies - now required for live data fetching
+requests>=2.25.0
+beautifulsoup4>=4.9.0
+lxml>=4.6.0
+
+# Geocoding support - requests is already included above
+
+# Optional: If you want to add data analysis capabilities
+# pandas>=1.3.0
+# numpy>=1.21.0 
