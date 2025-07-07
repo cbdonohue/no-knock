@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Township Address Geocoding System</title>
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-map-marked-alt"></i> Ocean Township Address Geocoding</h1>
+            <p class="subtitle">Complete geocoding solution for Ocean Township No Knock Registry</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Status Panel -->
+        <div class="status-panel" id="statusPanel">
+            <div class="status-content">
+                <div class="status-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="status-text">
+                    <span id="statusMessage">Ready</span>
+                    <div class="progress-bar" id="progressBar" style="display: none;">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+                <div class="status-actions">
+                    <button id="dismissStatus" class="btn btn-sm"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard">
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalAddresses">0</h3>
+                        <p>Total Addresses</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="geocodedAddresses">0</h3>
+                        <p>Geocoded</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="successRate">0%</h3>
+                        <p>Success Rate</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-city"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="uniqueCities">0</h3>
+                        <p>Cities</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-panel">
+                <button id="refreshCacheBtn" class="btn btn-primary">
+                    <i class="fas fa-sync"></i> Refresh Cache
+                </button>
+                <button id="geocodeBtn" class="btn btn-success">
+                    <i class="fas fa-map-marked"></i> Start Geocoding
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" id="exportBtn">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="#" data-format="csv">CSV Format</a>
+                        <a href="#" data-format="kml">KML Format</a>
+                        <a href="#" data-format="json">JSON Format</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="map">
+                    <i class="fas fa-map"></i> Map View
+                </button>
+                <button class="tab-button" data-tab="addresses">
+                    <i class="fas fa-list"></i> Address List
+                </button>
+                <button class="tab-button" data-tab="analytics">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content active" id="mapTab">
+                <div class="map-container">
+                    <div class="map-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="addressSearch" placeholder="Search addresses...">
+                        </div>
+                        <div class="filter-controls">
+                            <select id="cityFilter">
+                                <option value="">All Cities</option>
+                            </select>
+                            <select id="zipFilter">
+                                <option value="">All Zip Codes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="map"></div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="addressesTab">
+                <div class="address-list-container">
+                    <div class="list-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="addressListSearch" placeholder="Search addresses...">
+                        </div>
+                        <div class="filter-controls">
+                            <select id="listCityFilter">
+                                <option value="">All Cities</option>
+                            </select>
+                            <select id="listZipFilter">
+                                <option value="">All Zip Codes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="address-list" id="addressList">
+                        <!-- Address items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="analyticsTab">
+                <div class="analytics-container">
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h3>Geographic Distribution</h3>
+                            <div id="geoDistribution" class="chart-container">
+                                <!-- Distribution chart will be loaded here -->
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h3>Density Analysis</h3>
+                            <div id="densityAnalysis" class="chart-container">
+                                <!-- Density analysis will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- External JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
