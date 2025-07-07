@@ -39,6 +39,14 @@ This project provides a complete end-to-end solution for:
 - **Professional Styling**: Custom icons and formatting for visualizations
 - **GIS Ready**: Direct import into professional mapping software
 
+### **Data Quality & Anomaly Detection**
+- **Fraud Detection**: Statistical analysis to identify suspicious entries
+- **Geographic Validation**: Detect addresses outside expected boundaries
+- **Duplicate Detection**: Find multiple addresses at identical coordinates
+- **Format Validation**: Identify formatting inconsistencies and errors
+- **Pattern Analysis**: Detect bulk registrations and suspicious patterns
+- **Quality Scoring**: Comprehensive data quality assessment and reporting
+
 ## 📁 Project Structure
 
 ```
@@ -46,6 +54,8 @@ openocean/
 ├── cache_addresses.py          # Main address collection and caching
 ├── geocode_addresses.py        # Geocoding with coordinates
 ├── geocoded_examples.py        # Analysis and export tools
+├── anomaly_detection.py        # Fraud detection and data quality analysis
+├── visualize_anomalies.py      # Anomaly visualization and reporting
 ├── example_usage.py           # Basic usage examples
 ├── refresh_example.py         # Live data refresh demo
 ├── requirements.txt           # Python dependencies
@@ -56,7 +66,10 @@ openocean/
     ├── addresses.pkl          # Cached addresses (binary)
     ├── geocoded_addresses.json # Geocoded addresses (JSON)
     ├── geocoded_addresses.pkl  # Geocoded addresses (binary)
-    └── failed_geocoding.json  # Failed geocoding attempts
+    ├── failed_geocoding.json  # Failed geocoding attempts
+    ├── anomalies.json         # Detected anomalies (machine-readable)
+    ├── anomaly_report.txt     # Detailed anomaly analysis report
+    └── quality_summary.md     # Data quality summary report
 ```
 
 ## 🔧 Installation
@@ -82,6 +95,12 @@ python3 geocode_addresses.py
 
 # Step 3: Analyze and export
 python3 geocoded_examples.py
+
+# Step 4: Detect anomalies and fraud
+python3 anomaly_detection.py
+
+# Step 5: Visualize anomaly insights
+python3 visualize_anomalies.py
 ```
 
 ## 📊 Usage Guide
@@ -136,6 +155,35 @@ python3 geocoded_examples.py
 - Density analysis and hotspots
 - CSV export for spreadsheets/GIS
 - KML export for Google Earth/Maps
+
+### **Step 4: Anomaly Detection**
+
+Identify potential fraudulent or suspicious entries:
+
+```bash
+python3 anomaly_detection.py
+```
+
+**Features:**
+- Geographic outlier detection
+- Duplicate coordinate identification
+- Address format validation
+- Suspicious pattern analysis
+- Comprehensive quality scoring
+
+### **Step 5: Anomaly Visualization**
+
+Generate insights and actionable recommendations:
+
+```bash
+python3 visualize_anomalies.py
+```
+
+**Output:**
+- Statistical analysis of anomalies
+- Priority action recommendations
+- Data quality summary report
+- Detailed investigation guidelines
 
 ## 💻 Programmatic Usage
 
@@ -218,6 +266,34 @@ analyzer.export_for_mapping("addresses.csv")
 analyzer.generate_kml("addresses.kml")
 ```
 
+### **Anomaly Detection Operations**
+
+```python
+from anomaly_detection import AddressAnomalyDetector
+
+# Initialize detector
+detector = AddressAnomalyDetector()
+
+# Run all anomaly detections
+anomalies = detector.run_all_detections()
+
+# Get summary statistics
+stats = detector.stats
+print(f"Anomaly rate: {stats['anomaly_rate']:.1f}%")
+print(f"High severity issues: {stats['high_severity_count']}")
+
+# Generate detailed report
+report = detector.generate_report(save_to_file=True)
+
+# Export machine-readable data
+detector.export_anomalies_json()
+
+# Access specific anomaly types
+geo_outliers = anomalies['geographic_outliers']
+duplicates = anomalies['duplicate_coordinates']
+format_issues = anomalies['format_anomalies']
+```
+
 ## 📈 Data Pipeline Flow
 
 ```mermaid
@@ -281,6 +357,11 @@ graph TD
 - `ocean_township_addresses.csv` - Spreadsheet/GIS format
 - `ocean_township_addresses.kml` - Google Earth/Maps format
 
+### **Anomaly Detection Files**
+- `address_cache/anomalies.json` - Machine-readable anomaly data
+- `address_cache/anomaly_report.txt` - Detailed anomaly analysis
+- `address_cache/quality_summary.md` - Data quality summary report
+
 ## 🌍 Real-World Applications
 
 ### **Urban Planning**
@@ -302,6 +383,12 @@ graph TD
 - Market analysis and demographics
 - Service area planning
 - Location-based decision making
+
+### **Data Quality & Fraud Prevention**
+- Identify fraudulent or suspicious address registrations
+- Detect data entry errors and inconsistencies
+- Monitor registry abuse and bulk submissions
+- Ensure data integrity for official records
 
 ## 📋 Requirements
 
