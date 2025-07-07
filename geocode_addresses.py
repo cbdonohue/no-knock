@@ -35,6 +35,15 @@ class AddressGeocoder:
         self.success_count = 0
         self.failed_count = 0
         
+        # Monmouth County, NJ bounding box for location biasing
+        # From Wikipedia: top=40.5, bottom=40.1, left=-74.6, right=-73.8
+        self.monmouth_county_bounds = {
+            'north': 40.5,
+            'south': 40.1,
+            'west': -74.6,
+            'east': -73.8
+        }
+        
     def load_addresses(self) -> List[Dict]:
         """Load addresses from cache"""
         try:
@@ -69,18 +78,25 @@ class AddressGeocoder:
     def geocode_with_nominatim(self, address: str) -> Optional[Tuple[float, float]]:
         """
         Geocode address using Nominatim (OpenStreetMap) - Free but rate limited
+        Now includes location biasing for Monmouth County, NJ
         Returns (latitude, longitude) or None if failed
         """
         try:
             # Nominatim API endpoint
             url = "https://nominatim.openstreetmap.org/search"
             
+            # Create viewbox parameter for Monmouth County, NJ
+            # Format: viewbox=<west>,<north>,<east>,<south>
+            viewbox = f"{self.monmouth_county_bounds['west']},{self.monmouth_county_bounds['north']},{self.monmouth_county_bounds['east']},{self.monmouth_county_bounds['south']}"
+            
             params = {
                 'q': address,
                 'format': 'json',
                 'limit': 1,
                 'addressdetails': 1,
-                'countrycodes': 'us'  # Limit to US addresses
+                'countrycodes': 'us',  # Limit to US addresses
+                'viewbox': viewbox,    # Bias towards Monmouth County, NJ
+                'bounded': 0  # Don't strictly limit to viewbox, just bias
             }
             
             headers = {
@@ -106,15 +122,22 @@ class AddressGeocoder:
     def geocode_with_google(self, address: str, api_key: str) -> Optional[Tuple[float, float]]:
         """
         Geocode address using Google Maps API - More accurate but requires API key
+        Now includes location biasing for Monmouth County, NJ
         Returns (latitude, longitude) or None if failed
         """
         try:
             url = "https://maps.googleapis.com/maps/api/geocode/json"
             
+            # Create bounds parameter for Monmouth County, NJ
+            # Format: bounds=southwest_lat,southwest_lng|northeast_lat,northeast_lng
+            bounds = f"{self.monmouth_county_bounds['south']},{self.monmouth_county_bounds['west']}|{self.monmouth_county_bounds['north']},{self.monmouth_county_bounds['east']}"
+            
             params = {
                 'address': address,
                 'key': api_key,
-                'region': 'us'  # Bias towards US results
+                'region': 'us',  # Bias towards US results
+                'bounds': bounds,  # Bias towards Monmouth County, NJ
+                'components': 'administrative_area_level_2:Monmouth County|country:US'  # Further bias to Monmouth County
             }
             
             response = requests.get(url, params=params, timeout=10)

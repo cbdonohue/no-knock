@@ -122,6 +122,7 @@ python3 geocode_addresses.py --stats-only
 - Automatic resume capability
 - Rate limiting for API respect
 - Success rate monitoring
+- **Location biasing for Monmouth County, NJ** - Improved accuracy for local addresses
 
 ### **Step 3: Analysis & Export**
 
@@ -281,7 +282,22 @@ graph TD
 - `ocean_township_addresses.csv` - Spreadsheet/GIS format
 - `ocean_township_addresses.kml` - Google Earth/Maps format
 
-## 🌍 Real-World Applications
+## � Location Biasing Feature
+
+### **Monmouth County, NJ Optimization**
+The geocoding system now includes intelligent location biasing that prioritizes results within Monmouth County, NJ:
+
+- **Bounding Box**: 40.1°N to 40.5°N, -74.6°W to -73.8°W
+- **Both APIs Enhanced**: Works with both Nominatim and Google Maps APIs
+- **Smart Biasing**: Prefers local results but allows valid matches outside the area
+- **Better Accuracy**: Resolves ambiguous addresses like "Main Street" to local locations first
+
+### **Technical Implementation**
+- **Nominatim**: Uses `viewbox` parameter with `bounded=0` for biasing
+- **Google Maps**: Uses `bounds` parameter plus `components` filtering
+- **Fallback Safe**: Gracefully handles API limitations and maintains normal functionality
+
+## �🌍 Real-World Applications
 
 ### **Urban Planning**
 - Identify address density patterns
